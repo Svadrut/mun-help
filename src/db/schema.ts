@@ -41,6 +41,7 @@ export const submissionStatus = pgEnum("submission_status", [
   "graded",
   "resubmitted",
 ]);
+export const requestStatus = pgEnum("request_status", ["pending", "approved", "rejected"]);
 
 // Schools (one per school/club) -- "each school gets a group of students"
 export const school = pgTable("school", {
@@ -259,6 +260,7 @@ export const schoolRelations = relations(school, ({ many }) => ({
   memberships: many(membership),
   lessons: many(lesson),
   resources: many(resource),
+  joinRequests: many(joinRequest),
 }));
 
 export const userRelations = relations(user, ({ one, many }) => ({
@@ -361,6 +363,28 @@ export const modelAnswerRelations = relations(model_answer, ({ one }) => ({
     references: [user.id],
   }),
 }));
+
+// School join requests
+export const joinRequest = pgTable(
+  "join_request",
+  {
+    id: serial("id").primaryKey(),
+    school_id: integer("school_id")
+      .references(() => school.id)
+      .notNull(),
+    name: varchar("name", { length: 255 }).notNull(),
+    email: varchar("email", { length: 320 }).notNull(),
+    clerk_id: text("clerk_id").notNull(),
+    status: requestStatus("status").default("pending").notNull(),
+    created_at: timestamp("created_at").defaultNow().notNull(),
+    updated_at: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("join_request_school_id_idx").on(table.school_id),
+    index("join_request_clerk_id_idx").on(table.clerk_id),
+    index("join_request_status_idx").on(table.status),
+  ]
+);
 
 // Example: splitting lesson content into pages (server-side pseudocode):
 // const PAGE_TOKEN = '<!-- PAGE -->';

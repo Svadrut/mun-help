@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider, UserButton } from "@clerk/nextjs";
 import { ThemeProvider } from "../components/theme-provider";
 import "./globals.css";
 import { ModeToggle } from "../components/ModeToggle";
+import { shadcn } from "@clerk/themes";
+import {Toaster} from "@/components/ui/sonner"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,16 +32,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ClerkProvider>
+        <ClerkProvider appearance={shadcn}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
-            <div className="flex justify-end flex-row p-3">
+            <div className="flex justify-end flex-row p-3 space-x-3">
               <ModeToggle />
+              <UserButton />
             </div>
+            <Toaster />
             {children}
           </ThemeProvider>
         </ClerkProvider>

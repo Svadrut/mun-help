@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@plugin "@egoist/tailwindcss-icons";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -111,9 +113,6 @@
   --sidebar-border:  oklch(1 0 0 / 10%);
   --sidebar-ring:  oklch(0.439 0 0);
 }
-
-
-
 
 @layer base {
   * {
