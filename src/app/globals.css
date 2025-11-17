@@ -5,6 +5,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
+
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -120,5 +122,44 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+.lesson-card {
+  /* Headings */
+  h1, h2, h3 {
+    font-weight: 700;
+  }
+
+  h1 { font-size: 2.25rem; line-height: 2.5rem; }
+  h2 { font-size: 1.875rem; line-height: 2.25rem; }
+  h3 { font-size: 1.5rem; line-height: 2rem; }
+
+  h1:not(:first-child),
+  h2:not(:first-child),
+  h3:not(:first-child) {
+    margin-top: 2rem;
+  }
+  h1, h2, h3 { margin-bottom: 0.5rem; }
+
+  /* Lists */
+  ul {
+    list-style-type: disc !important;
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  ol {
+    list-style-type: decimal !important;
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  li {
+    display: list-item !important;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
   }
 }

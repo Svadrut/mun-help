@@ -1,12 +1,29 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import CreateSchoolForm from "./create-school-form";
+import { user } from "@/src/db/schema";
+import { eq } from "drizzle-orm";
+import { db } from "@/src/db/drizzle";
 
 export default async function CreateSchoolPage() {
-  const user = await currentUser();
+  const clerkUser = await currentUser();
 
-  if (!user) {
+  if (!clerkUser) {
     redirect("/sign-in");
+  }
+
+  if (clerkUser) {
+    // Check if user already exists in the database with a school
+    const existingUser = await db
+      .select()
+      .from(user)
+      .where(eq(user.clerk_id, clerkUser.id))
+      .limit(1);
+
+    // If user exists and has a school_id, redirect them
+    if (existingUser.length > 0 && existingUser[0].school_id) {
+      redirect("/");
+    }
   }
 
   return (

@@ -20,7 +20,7 @@ export default async function Onboard() {
 
     // If user exists and has a school_id, redirect them
     if (existingUser.length > 0 && existingUser[0].school_id) {
-      redirect("/lessons");
+      redirect("/");
     }
   }
 

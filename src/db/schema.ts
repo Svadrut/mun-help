@@ -109,6 +109,7 @@ export const lesson = pgTable(
       .references(() => user.id)
       .notNull(),
     title: varchar("title", { length: 500 }).notNull(),
+    instructions: text("instructions").notNull(),
     // Optional headings array stored as JSON array of strings. Useful for a table-of-contents UI.
     headings: json("headings").$type<string[] | null>(),
     // Markdown body. Use the page-break token (see file header) to split into slides/pages.

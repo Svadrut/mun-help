@@ -6,6 +6,7 @@ import "./globals.css";
 import { ModeToggle } from "../components/ModeToggle";
 import { shadcn } from "@clerk/themes";
 import {Toaster} from "@/components/ui/sonner"
+import { Navbar } from "../components/Navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,11 +40,8 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <div className="flex justify-end flex-row p-3 space-x-3">
-              <ModeToggle />
-              <UserButton />
-            </div>
             <Toaster />
+            <Navbar />
             {children}
           </ThemeProvider>
         </ClerkProvider>

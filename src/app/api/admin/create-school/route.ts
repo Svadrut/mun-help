@@ -1,4 +1,4 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { db } from "@/src/db/drizzle";
 import { school, user, membership } from "@/src/db/schema";
 import { eq, and } from "drizzle-orm";
@@ -10,10 +10,7 @@ export async function POST(request: Request) {
     const clerkUser = await currentUser();
 
     if (!clerkUser) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Parse request body
@@ -78,10 +75,12 @@ export async function POST(request: Request) {
     const existingMembership = await db
       .select()
       .from(membership)
-      .where(and(
-        eq(membership.user_id, userId),
-        eq(membership.school_id, newSchool.id)
-      ))
+      .where(
+        and(
+          eq(membership.user_id, userId),
+          eq(membership.school_id, newSchool.id)
+        )
+      )
       .limit(1);
 
     if (existingMembership.length === 0) {
@@ -104,6 +103,13 @@ export async function POST(request: Request) {
         .where(eq(membership.id, existingMembership[0].id));
     }
 
+    const client = await clerkClient();
+    await client.users.updateUser(clerkUser.id, {
+      publicMetadata: {
+        admin: true,
+      },
+    });
+
     return NextResponse.json(
       {
         success: true,
@@ -118,10 +124,10 @@ export async function POST(request: Request) {
     console.error("Error creating school:", error);
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Failed to create school",
+        error:
+          error instanceof Error ? error.message : "Failed to create school",
       },
       { status: 500 }
     );
   }
 }
-

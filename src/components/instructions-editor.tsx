@@ -35,7 +35,7 @@ function defineLessonExtension() {
     defineBasicExtension(),
     definePlaceholder({
       placeholder:
-        "Start writing your grading guidlines for the AI assistant to follow. If both activity types selected, write guidelines for both...",
+        "Start writing activity instructions...",
     })
   );
 }
@@ -55,7 +55,7 @@ const defaultEmptyContent = {
   ],
 };
 
-export default function GuideLineEditor({
+export default function InstructionsEditor({
   content,
   onChange,
 }: LessonEditorProps) {
@@ -96,6 +96,18 @@ export default function GuideLineEditor({
       }
     }
   }, [editor, onChange]);
+
+  useEffect(() => {
+    if (!editor || !content) return;
+  
+    const currentJSON = editor.state.doc.toJSON();
+  
+    // Avoid unnecessary reset
+    if (JSON.stringify(currentJSON) === JSON.stringify(content)) return;
+  
+    // Update the editor with new content
+    editor.setContent(content);
+  }, [content, editor]);
 
   return (
     <ProseKit editor={editor}>

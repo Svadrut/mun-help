@@ -22,40 +22,39 @@ import {
 import SchoolSelector from "../../onboard/school-selector";
 import { CreateLessonDropdown } from "./create-lesson-dropdown";
 import GuideLineEditor from "@/src/components/guideline-editor";
+import InstructionsEditor from "@/src/components/instructions-editor";
 
 interface CreateLessonFormProps {
   schoolId: number;
   userId: number;
 }
 
-export function saveAsMarkdown(json: NodeJSON) {
-  const schema = defineBasicExtension().schema!;
 
-  const pmNode = ProseMirrorNode.fromJSON(schema, json);
-
-  const markdown = defaultMarkdownSerializer.serialize(pmNode);
-
-  return markdown;
-}
 
 function saveLesson(
   title: string,
   content: NodeJSON | null,
   guidelineContent: NodeJSON | null,
-  activityType: string
+  activityType: string,
+  instructions: NodeJSON | null,
 ) {
+  if (title.length === 0) {
+    return;
+  }
   const prevSaves =
     localStorage.getItem("create-lesson") !== null
       ? (JSON.parse(localStorage.getItem("create-lesson")!) as {
           title: string;
           content: NodeJSON | null;
           guidelineContent: NodeJSON | null;
+          instructions: NodeJSON | null;
           activityType: string;
         }[])
       : ([] as {
           title: string;
           content: NodeJSON | null;
           guidelineContent: NodeJSON | null;
+          instructions: NodeJSON | null;
           activityType: string;
         }[]);
 
@@ -67,14 +66,14 @@ function saveLesson(
       content,
       guidelineContent,
       activityType,
+      instructions,
     };
-    console.log("here");
   } else {
-    prevSaves.push({ title, content, guidelineContent, activityType });
-    console.log("here 2");
+    prevSaves.push({ title, content, guidelineContent, activityType, instructions });
   }
 
   localStorage.setItem("create-lesson", JSON.stringify(prevSaves));
+  toast("Saved!");
 }
 
 export default function CreateLessonForm({
@@ -92,6 +91,7 @@ export default function CreateLessonForm({
   const [activityType, setActivityType] = useState<
     "writing" | "speaking" | "both"
   >("writing");
+  const [instructions, setInstructions] = useState<NodeJSON | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -110,7 +110,7 @@ export default function CreateLessonForm({
       return;
     }
 
-    if (!content) {
+    if (!content || !guidelineContent || !instructions) {
       setError("Lesson content is required");
       setIsSubmitting(false);
       return;
@@ -132,6 +132,7 @@ export default function CreateLessonForm({
           type: activityType,
           schoolId,
           userId,
+          instructions: JSON.stringify(instructions),
         }),
       });
 
@@ -141,8 +142,25 @@ export default function CreateLessonForm({
         throw new Error(data.error || "Failed to create lesson");
       }
 
+      const createLesson =
+        localStorage.getItem("create-lesson") != null
+          ? (JSON.parse(localStorage.getItem("create-lesson")!) as {
+              title: string;
+              content: NodeJSON | null;
+              guidelineContent: NodeJSON | null;
+              activityType: string;
+              instructions: NodeJSON | null;
+            }[])
+          : null;
+
+      createLesson !== null &&
+        localStorage.setItem(
+          "create-lesson",
+          JSON.stringify(createLesson.filter((i) => i.title !== title))
+        );
+
       // Redirect to lessons page on success
-      router.push("/lessons");
+      router.push("/admin/lessons");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
       setIsSubmitting(false);
@@ -189,6 +207,16 @@ export default function CreateLessonForm({
 
       <div className="flex flex-col space-y-2">
         <label className="text-sm font-medium">
+          Activity Instructions <span className="text-destructive">*</span>
+        </label>
+        <InstructionsEditor
+          content={instructions || undefined}
+          onChange={(json) => setInstructions(json)}
+        />
+      </div>
+
+      <div className="flex flex-col space-y-2">
+        <label className="text-sm font-medium">
           Grading Guidelines <span className="text-destructive">*</span>
         </label>
         <GuideLineEditor
@@ -211,8 +239,7 @@ export default function CreateLessonForm({
           type="button"
           variant="outline"
           onClick={() => {
-            saveLesson(title, content, guidelineContent, activityType);
-            toast("Saved!");
+            saveLesson(title, content, guidelineContent, activityType, instructions);
           }}
           disabled={isSubmitting}
         >

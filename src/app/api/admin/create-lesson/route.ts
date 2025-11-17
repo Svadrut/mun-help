@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
     // Parse request body
     const body = await request.json();
-    const { title, contentMarkdown, schoolId, userId, gradingGuide, type } = body;
+    const { title, contentMarkdown, schoolId, userId, gradingGuide, type, instructions } = body;
 
     if (!title || typeof title !== "string" || title.trim().length === 0) {
       return NextResponse.json(
@@ -80,6 +80,7 @@ export async function POST(request: Request) {
         content_markdown: contentMarkdown, // Storing ProseKit JSON as string
         is_published: true,
         grading_guide: gradingGuide,
+        instructions,
         type
       })
       .returning();

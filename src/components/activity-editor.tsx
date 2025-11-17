@@ -35,7 +35,7 @@ function defineLessonExtension() {
     defineBasicExtension(),
     definePlaceholder({
       placeholder:
-        "Start writing your grading guidlines for the AI assistant to follow. If both activity types selected, write guidelines for both...",
+        "Start your writing activity...",
     })
   );
 }
@@ -55,7 +55,7 @@ const defaultEmptyContent = {
   ],
 };
 
-export default function GuideLineEditor({
+export default function ActivityEditor({
   content,
   onChange,
 }: LessonEditorProps) {
