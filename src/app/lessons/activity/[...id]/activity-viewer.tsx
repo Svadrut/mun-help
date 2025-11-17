@@ -8,34 +8,13 @@ import Link from "next/link";
 import React, { useState, JSX, useEffect } from "react";
 import { toast } from "sonner";
 
-function saveActivity(content: NodeJSON | null, id: string) {
-  const prevSaves =
-    localStorage.getItem("activity") !== null
-      ? (JSON.parse(localStorage.getItem("activity")!) as {
-          content: NodeJSON | null;
-          id: string;
-        }[])
-      : ([] as {
-          content: NodeJSON | null;
-          id: string;
-        }[]);
-
-  const alreadySaved = prevSaves.findIndex((val) => val.id === id);
-
-  if (alreadySaved !== -1) {
-    prevSaves[alreadySaved] = {
-      id,
-      content,
-    };
-  } else {
-    prevSaves.push({
-      content,
-      id,
-    });
-  }
-
-  localStorage.setItem("activity", JSON.stringify(prevSaves));
-  toast("Saved!");
+function blobToDataURL(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onloadend = () => resolve(r.result as string);
+    r.onerror = reject;
+    r.readAsDataURL(blob);
+  });
 }
 
 type NodeJSON = {
@@ -172,46 +151,121 @@ export const ActivityViewer = ({
   id,
   type,
   title,
+  userId,
+  schoolId,
 }: {
   doc: NodeJSON;
   id: string;
   type: "writing" | "speaking" | "both";
   title: string;
+  userId: number;
+  schoolId: number;
 }) => {
   const [content, setContent] = useState<NodeJSON | null>(null);
   const [contentLoading, setContentLoading] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null); // <--- new state
 
-  useEffect(() => {
-    const activity =
+  async function saveActivity() {
+    const prevSaves =
       localStorage.getItem("activity") !== null
-        ? (
-            JSON.parse(localStorage.getItem("activity")!) as {
-              content: NodeJSON | null;
-              id: string;
-            }[]
-          ).filter((i) => {
-            console.log(id, "ASDFASDFASDF" + i.id);
-            return i.id === id;
-          })
-        : null;
-    console.log(activity);
-    if (activity && activity[0] !== undefined) {
-      setContent(activity[0].content);
-      console.log(activity[0].content);
-      setContentLoading("asdfkasd");
-      console.log("running");
+        ? (JSON.parse(localStorage.getItem("activity")!) as {
+            content: NodeJSON | null;
+            id: string;
+            audioBase64?: string;
+          }[])
+        : [];
+
+    const alreadySaved = prevSaves.findIndex((val) => val.id === id);
+
+    let audioBase64: string | undefined;
+    if (audioBlob) {
+      audioBase64 = await blobToDataURL(audioBlob);
     }
-  }, []);
+
+    const newEntry = {
+      id,
+      content: type === "writing" || type === "both" ? content : null,
+      audioBase64: audioBase64 ?? prevSaves[alreadySaved]?.audioBase64,
+    };
+
+    if (alreadySaved !== -1) {
+      prevSaves[alreadySaved] = newEntry;
+    } else {
+      prevSaves.push(newEntry);
+    }
+
+    localStorage.setItem("activity", JSON.stringify(prevSaves));
+    toast("Saved!");
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     const submitEvent = e.nativeEvent as SubmitEvent;
     const submitter = submitEvent?.submitter as HTMLButtonElement | undefined;
-    if (submitter && submitter.name != "submit-button") {
-      return;
+    if (submitter && submitter.name != "submit-button") return;
+
+    setIsSubmitting(true);
+
+    let audioUrl = null;
+
+    if (audioBlob) {
+      const base64 = await blobToDataURL(audioBlob);
+
+      const res = await fetch("/api/upload-audio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          audioBase64: base64,
+          filename: `recording-${id}.webm`,
+        }),
+      });
+
+      const data = await res.json();
+      audioUrl = data?.uploaded?.[0]?.data?.url ?? null;
+      console.log("BBBBBBBBBBBBBBBBBBBB" + audioUrl)
     }
+
+    const res2 = await fetch("/api/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        audioUrl: audioUrl,
+        type,
+        id,
+        userId,
+        schoolId,
+        content: content,
+      }),
+    });
+
+    setIsSubmitting(false);
   }
+
+  useEffect(() => {
+    const saved = localStorage.getItem("activity");
+    if (!saved) return;
+
+    const activity = JSON.parse(saved).find((a: any) => a.id === id);
+    if (!activity) return;
+
+    if (activity.content) {
+      setContent(activity.content);
+      setContentLoading("Asdf");
+    }
+
+    if (activity.audioBase64) {
+      // convert base64 back to blob
+      const byteString = atob(activity.audioBase64.split(",")[1]);
+      const ab = new ArrayBuffer(byteString.length);
+      const ia = new Uint8Array(ab);
+      for (let i = 0; i < byteString.length; i++)
+        ia[i] = byteString.charCodeAt(i);
+      const blob = new Blob([ab], { type: "audio/webm" });
+      setAudioBlob(blob);
+    }
+  }, [id]);
 
   return (
     <form
@@ -246,7 +300,10 @@ export const ActivityViewer = ({
             Speaking activity <span className="text-destructive">*</span>
           </label>
           <div className="w-full items-start">
-            <AudioRecorderCard />
+            <AudioRecorderCard
+              onRecordingComplete={(blob) => setAudioBlob(blob)}
+              initialAudio={audioBlob}
+            />
           </div>
         </div>
       )}
@@ -258,7 +315,7 @@ export const ActivityViewer = ({
           type="button"
           variant="outline"
           onClick={() => {
-            saveActivity(content, id);
+            saveActivity();
           }}
           disabled={isSubmitting}
         >

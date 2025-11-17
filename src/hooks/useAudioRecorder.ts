@@ -54,5 +54,6 @@ export function useAudioRecorder() {
     startRecording,
     stopRecording,
     resetRecording,
+    audioBlob
   };
 }

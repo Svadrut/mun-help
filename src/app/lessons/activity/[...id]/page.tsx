@@ -8,7 +8,10 @@ import { remark } from "remark";
 import html from "remark-html";
 import { defineBasicExtension } from "prosekit/basic";
 import { NodeJSON } from "prosekit/core";
-import { defaultMarkdownSerializer, MarkdownSerializer } from "prosemirror-markdown";
+import {
+  defaultMarkdownSerializer,
+  MarkdownSerializer,
+} from "prosemirror-markdown";
 import { Node as ProseMirrorNode, DOMSerializer } from "prosemirror-model";
 import { ActivityViewer } from "./activity-viewer";
 
@@ -43,45 +46,44 @@ const nodes = {
 
 // reuse mark serializers from default
 const marks = {
-    ...defaultMarkdownSerializer.marks,
-  
-    // ProseKit bold → **text**
-    bold: {
-      open: "**",
-      close: "**",
-      mixable: true,
-      expelEnclosingWhitespace: true,
-    },
-  
-    // ProseKit italic → *text*
-    italic: {
-      open: "*",
-      close: "*",
-      mixable: true,
-      expelEnclosingWhitespace: true,
-    },
-  
-    // --- ADD THIS ---
-    // ProseKit strikethrough → ~~text~~
-    strikethrough: {
-      open: "~~",
-      close: "~~",
-      mixable: true,
-      expelEnclosingWhitespace: true,
-    },
-  
-    // If your schema uses `strike` instead:
-    strike: {
-      open: "~~",
-      close: "~~",
-      mixable: true,
-      expelEnclosingWhitespace: true,
-    },
-  };
+  ...defaultMarkdownSerializer.marks,
+
+  // ProseKit bold → **text**
+  bold: {
+    open: "**",
+    close: "**",
+    mixable: true,
+    expelEnclosingWhitespace: true,
+  },
+
+  // ProseKit italic → *text*
+  italic: {
+    open: "*",
+    close: "*",
+    mixable: true,
+    expelEnclosingWhitespace: true,
+  },
+
+  // --- ADD THIS ---
+  // ProseKit strikethrough → ~~text~~
+  strikethrough: {
+    open: "~~",
+    close: "~~",
+    mixable: true,
+    expelEnclosingWhitespace: true,
+  },
+
+  // If your schema uses `strike` instead:
+  strike: {
+    open: "~~",
+    close: "~~",
+    mixable: true,
+    expelEnclosingWhitespace: true,
+  },
+};
 
 // create serializer
 const mySerializer = new MarkdownSerializer(nodes, marks);
-
 
 export function saveAsMarkdown(json: NodeJSON) {
   const schema = defineBasicExtension().schema!;
@@ -140,11 +142,22 @@ export default async function ViewLesson({
   const viewLesson = await db
     .select()
     .from(lesson)
-    .where(and(eq(lesson.school_id, dbUser.school_id), eq(lesson.id, parseInt(id))));
+    .where(
+      and(eq(lesson.school_id, dbUser.school_id), eq(lesson.id, parseInt(id)))
+    );
 
   if (viewLesson.length === 0) {
     redirect("/lessons");
   }
 
-  return <ActivityViewer doc={JSON.parse(viewLesson[0].instructions)} id={String(id)} type={viewLesson[0].type} title={viewLesson[0].title} />;
+  return (
+    <ActivityViewer
+      doc={JSON.parse(viewLesson[0].instructions)}
+      id={String(id)}
+      type={viewLesson[0].type}
+      title={viewLesson[0].title}
+      schoolId={dbUser.school_id}
+      userId={dbUser.id}
+    />
+  );
 }

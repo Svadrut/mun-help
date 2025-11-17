@@ -1,13 +1,69 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { useAudioRecorder } from "@/src/hooks/useAudioRecorder";
+import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCcw } from "lucide-react";
 
-export default function AudioRecorderCard() {
-  const { isRecording, audioUrl, startRecording, stopRecording, resetRecording } =
-    useAudioRecorder();
+interface Props {
+  onRecordingComplete?: (blob: Blob) => void;
+  initialAudio?: Blob | null;
+}
+
+export default function AudioRecorderCard({ onRecordingComplete, initialAudio }: Props) {
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+
+  // Load initial audio
+  useEffect(() => {
+    if (initialAudio) {
+      const url = URL.createObjectURL(initialAudio);
+      setAudioUrl(url);
+    }
+  }, [initialAudio]);
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+      chunksRef.current = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+
+      recorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        const url = URL.createObjectURL(blob);
+        setAudioUrl(url);
+        if (onRecordingComplete) onRecordingComplete(blob);
+      };
+
+      recorder.start();
+      setIsRecording(true);
+    } catch (err) {
+      console.error("Error starting recording", err);
+    }
+  };
+
+  const stopRecording = () => {
+    const recorder = mediaRecorderRef.current;
+    if (recorder && recorder.state !== "inactive") {
+      recorder.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const resetRecording = () => {
+    if (audioUrl) URL.revokeObjectURL(audioUrl);
+    setAudioUrl(null);
+    chunksRef.current = [];
+    if (onRecordingComplete) onRecordingComplete(null as any);
+  };
 
   return (
     <Card className="w-full max-w-sm mx-auto mt-8 p-4 text-center">
