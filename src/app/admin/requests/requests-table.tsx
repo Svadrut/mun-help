@@ -65,6 +65,39 @@ export default function RequestsTable({ requests: initialRequests }: RequestsTab
     }
   }
 
+  async function handleAdmin(requestId: number) {
+    setProcessingId(requestId);
+
+    try {
+      const response = await fetch("/api/requests/admin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          requestId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to approve request");
+      }
+
+      // Remove the approved request from the list
+      setRequests(requests.filter((req) => req.id !== requestId));
+      
+      // Refresh the page to show updated data
+      router.refresh();
+    } catch (error) {
+      console.error("Error approving request:", error);
+      alert(error instanceof Error ? error.message : "Failed to approve request");
+    } finally {
+      setProcessingId(null);
+    }
+  }
+
   async function handleReject(requestId: number) {
     setProcessingId(requestId);
 
@@ -142,6 +175,14 @@ export default function RequestsTable({ requests: initialRequests }: RequestsTab
                     disabled={processingId === request.id}
                   >
                     {processingId === request.id ? "Processing..." : "Reject"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleAdmin(request.id)}
+                    disabled={processingId === request.id}
+                  >
+                    {processingId === request.id ? "Processing..." : "Admin"}
                   </Button>
                   <Button
                     size="sm"

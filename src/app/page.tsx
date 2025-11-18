@@ -43,7 +43,7 @@ export default async function Home() {
   if (userMembership.length === 0) {
     redirect("/lessons");
   } else {
-    redirect("/admin/lessons");
+    redirect("/admin/view-lessons");
   }
 
   return (

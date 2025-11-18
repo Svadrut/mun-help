@@ -133,7 +133,7 @@ export default async function ViewLesson({
     .limit(1);
 
   if (userMembership.length > 0) {
-    redirect("/admin/lessons");
+    redirect("/admin/view-lessons");
   }
 
   // Get all pending requests for this school

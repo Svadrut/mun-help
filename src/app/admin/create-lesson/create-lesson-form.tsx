@@ -235,7 +235,7 @@ export default function CreateLessonForm({
         <Button type="submit" disabled={isSubmitting} name="submit-button">
           {isSubmitting ? "Creating..." : "Publish Lesson"}
         </Button>
-        <Button
+        {/* <Button
           type="button"
           variant="outline"
           onClick={() => {
@@ -244,7 +244,7 @@ export default function CreateLessonForm({
           disabled={isSubmitting}
         >
           Save
-        </Button>
+        </Button> */}
       </div>
     </form>
   );
