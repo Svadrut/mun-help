@@ -37,7 +37,7 @@ export default function CreateSchoolForm() {
       }
 
       // Redirect to onboard or lessons page on success
-      router.push("/lessons");
+      router.push("/admin/view-lessons");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
       setIsSubmitting(false);
