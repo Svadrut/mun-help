@@ -11,7 +11,15 @@ export default async function Home() {
   const clerkUser = await currentUser();
 
   if (!clerkUser) {
-    redirect("/sign-in");
+    return (
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)]">
+        <h1 className="text-4xl font-bold">Flash Grader ⚡️</h1>
+        <h2 className="text-neutral-600 dark:text-neutral-400 mb-6">Created by Svadrut Krishnamurthy</h2>
+        <Link href="/sign-in">
+          <Button className="bg-primary">Sign in</Button>
+        </Link>
+      </div>
+    );
   }
 
   // Get the current user from the database
@@ -45,12 +53,4 @@ export default async function Home() {
   } else {
     redirect("/admin/view-lessons");
   }
-
-  return (
-    <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)]">
-      <Link href="/sign-in">
-        <Button className="bg-primary">Sign in</Button>
-      </Link>
-    </div>
-  );
 }
