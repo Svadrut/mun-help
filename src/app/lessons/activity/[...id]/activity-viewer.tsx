@@ -5,6 +5,7 @@ import ActivityEditor from "@/src/components/activity-editor";
 import AudioRecorderCard from "@/src/components/AudioRecorderCard";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import React, { useState, JSX, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -241,6 +242,7 @@ export const ActivityViewer = ({
     });
 
     setIsSubmitting(false);
+    redirect("/lessons")
   }
 
   useEffect(() => {
@@ -307,7 +309,7 @@ export const ActivityViewer = ({
           </div>
         </div>
       )}
-      <div className="flex flex-row gap-4 space-y-2 w-[60%] mx-auto">
+      <div className="flex flex-row gap-4 space-y-2 w-[60%] mx-auto mb-5">
         <Button type="submit" disabled={isSubmitting} name="submit-button">
           {isSubmitting ? "Creating..." : "Submit"}
         </Button>

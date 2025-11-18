@@ -2,7 +2,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { LessonViewer } from "../../[...id]/lesson-viewer";
 import { redirect } from "next/navigation";
 import { db } from "@/src/db/drizzle";
-import { lesson, membership, user } from "@/src/db/schema";
+import { lesson, membership, submission, user } from "@/src/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { remark } from "remark";
 import html from "remark-html";
@@ -148,6 +148,21 @@ export default async function ViewLesson({
 
   if (viewLesson.length === 0) {
     redirect("/lessons");
+  }
+
+  const existingSubmission = await db
+    .select()
+    .from(submission)
+    .where(
+      and(
+        eq(submission.lesson_id, parseInt(id)),
+        eq(submission.user_id, dbUser.id)
+      )
+    )
+    .limit(1);
+
+  if (existingSubmission.length > 0) {
+    redirect("/lessons/" + id);
   }
 
   return (

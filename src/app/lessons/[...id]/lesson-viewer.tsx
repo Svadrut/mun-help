@@ -38,7 +38,7 @@ const renderMarks = (
 };
 
 // Recursive node renderer
-const renderNode = (node: NodeJSON, key?: number | string): React.ReactNode => {
+export const renderNode = (node: NodeJSON, key?: number | string): React.ReactNode => {
   if (node.type === "text") return renderMarks(node.text, node.marks);
 
   const children = node.content?.map((child, i) => renderNode(child, i));
@@ -161,10 +161,12 @@ export const LessonViewer = ({
   doc,
   id,
   title,
+  alreadySubmitted,
 }: {
   doc: NodeJSON;
   id: string;
   title: string;
+  alreadySubmitted: boolean;
 }) => {
   const slides = splitSlides(doc.content || []);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -197,13 +199,14 @@ export const LessonViewer = ({
         </div>
       )}
       {currentSlide === slides.length - 1 && (
-        <Link href={`/lessons/activity/${id}`}>
+        <Link href={alreadySubmitted ? "#" : `/lessons/activity/${id}`}>
           <Button
-            disabled={currentSlide === 0}
+            disabled={alreadySubmitted}
             className="mt-6"
             variant="outline"
           >
-            Continue to activity <ArrowRight />
+            {alreadySubmitted ? "Submission Completed" : "Continue to activity"}
+            <ArrowRight />
           </Button>
         </Link>
       )}

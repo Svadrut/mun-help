@@ -3,8 +3,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/src/db/drizzle";
 import { joinRequest, user, membership, lesson, submission } from "@/src/db/schema";
 import { eq, and, desc } from "drizzle-orm";
-import RequestsTable from "./lessons-table";
-import Lessons from "./lessons-table";
+import ViewLessonsTable from "./view-lessons-table";
 
 export default async function RequestsPage() {
   const clerkUser = await currentUser();
@@ -39,8 +38,8 @@ export default async function RequestsPage() {
     )
     .limit(1);
 
-  if (userMembership.length > 0) {
-    redirect("/admin/lessons");
+  if (userMembership.length < 0) {
+    redirect("/lessons");
   }
 
   // Get all pending requests for this school
@@ -93,7 +92,7 @@ export default async function RequestsPage() {
           <h1 className="text-3xl font-bold mb-2">Lessons</h1>
         </div>
 
-        <Lessons lessons={formattedLessons} submissions={submissions} />
+        <ViewLessonsTable lessons={formattedLessons} />
       </div>
     </div>
   );

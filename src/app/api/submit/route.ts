@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   try {
     // Get the current authenticated user from Clerk
     const clerkUser = await currentUser();
-    console.log("HASDHFASKDHFAKHSDFKASDFHASKDHFAHSDKF")
+    console.log("HASDHFASKDHFAKHSDFKASDFHASKDHFAHSDKF");
 
     if (!clerkUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -26,14 +26,14 @@ export async function POST(request: Request) {
     // Parse request body
     const body = await request.json();
     const { audioUrl, content, id, userId, schoolId, type } = body;
-    
-    console.log("BOBBBBB" + JSON.stringify(body))
+
+    console.log("BOBBBBB" + JSON.stringify(body));
 
     if (
-      !audioUrl ||
-      (typeof audioUrl !== "string" && (type === "speaking" || type === "both"))
+      (!audioUrl || typeof audioUrl !== "string") &&
+      (type === "speaking" || type === "both")
     ) {
-        console.log("HEYYYYYY")
+      console.log("HEYYYYYY");
       return NextResponse.json(
         { error: "Submission audio is required" },
         { status: 400 }
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       (!content || typeof content !== "object") &&
       (type === "writing" || type === "both")
     ) {
-        console.log(body.content)
+      console.log(body.content);
       return NextResponse.json(
         { error: "Submission content is required" },
         { status: 400 }
@@ -71,18 +71,9 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log("ASDFKASDFKJASDF HERE I AM")
+    console.log("ASDFKASDFKJASDF HERE I AM");
 
     // Create the lesson in the database
-    const [result] = await db
-      .insert(submission)
-      .values({
-        lesson_id: id,
-        user_id: userId,
-        media_url: audioUrl,
-        status: "submitted",
-      })
-      .returning();
 
     const [currentLesson] = await db
       .select()
@@ -90,7 +81,7 @@ export async function POST(request: Request) {
       .where(eq(lesson.id, id));
 
     let transcription;
-    if (audioUrl !== null || audioUrl !== undefined) {
+    if (type === "speaking" || type === "both") {
       transcription = await transcribe({
         model: openai.transcription("gpt-4o-mini-transcribe"),
         audio: new URL(audioUrl),
@@ -107,9 +98,8 @@ export async function POST(request: Request) {
                You may or may not be provided a transcription or a written assignment. Score out of 100, using whole numbers only.
 
                ${
-                 audioUrl !== null ||
-                 (audioUrl !== undefined &&
-                   `Transcription: ${transcription?.text}. Duration ${transcription?.durationInSeconds}`)
+                 (type === "speaking" || type === "both") &&
+                 `Transcription: ${transcription?.text}. Duration ${transcription?.durationInSeconds}`
                }
                ${
                  content !== null &&
@@ -142,6 +132,18 @@ export async function POST(request: Request) {
         },
       },
     });
+
+    const [result] = await db
+      .insert(submission)
+      .values({
+        lesson_id: id,
+        user_id: userId,
+        media_url: audioUrl,
+        status: "submitted",
+        content_markdown: JSON.stringify(content),
+        transcript: transcription?.text,
+      })
+      .returning();
 
     const [grades] = await db
       .insert(grade)

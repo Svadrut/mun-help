@@ -16,10 +16,10 @@ export const Navbar = () => {
           <Link href="/admin/create-lesson">
             <Button variant="ghost">Create Lesson</Button>
           </Link>
-          <Link href="/admin/create-lesson">
+          <Link href="/admin/view-lessons">
             <Button variant="ghost">View Lessons</Button>
           </Link>
-          <Link href="/admin/create-lesson">
+          <Link href="/admin/progress">
             <Button variant="ghost">Progress</Button>
           </Link>
           <Link href="/admin/requests">
@@ -31,9 +31,6 @@ export const Navbar = () => {
         <>
           <Link href="/lessons">
             <Button variant="ghost">Lessons</Button>
-          </Link>
-          <Link href="/progress">
-            <Button variant="ghost">Progress</Button>
           </Link>
         </>
       )}

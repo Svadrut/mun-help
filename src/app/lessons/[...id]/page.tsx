@@ -2,13 +2,16 @@ import { currentUser } from "@clerk/nextjs/server";
 import { LessonViewer } from "./lesson-viewer";
 import { redirect } from "next/navigation";
 import { db } from "@/src/db/drizzle";
-import { lesson, membership, user } from "@/src/db/schema";
+import { lesson, membership, submission, user } from "@/src/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { remark } from "remark";
 import html from "remark-html";
 import { defineBasicExtension } from "prosekit/basic";
 import { NodeJSON } from "prosekit/core";
-import { defaultMarkdownSerializer, MarkdownSerializer } from "prosemirror-markdown";
+import {
+  defaultMarkdownSerializer,
+  MarkdownSerializer,
+} from "prosemirror-markdown";
 import { Node as ProseMirrorNode, DOMSerializer } from "prosemirror-model";
 
 // build nodes mapping that includes ProseKit node names
@@ -42,45 +45,44 @@ const nodes = {
 
 // reuse mark serializers from default
 const marks = {
-    ...defaultMarkdownSerializer.marks,
-  
-    // ProseKit bold → **text**
-    bold: {
-      open: "**",
-      close: "**",
-      mixable: true,
-      expelEnclosingWhitespace: true,
-    },
-  
-    // ProseKit italic → *text*
-    italic: {
-      open: "*",
-      close: "*",
-      mixable: true,
-      expelEnclosingWhitespace: true,
-    },
-  
-    // --- ADD THIS ---
-    // ProseKit strikethrough → ~~text~~
-    strikethrough: {
-      open: "~~",
-      close: "~~",
-      mixable: true,
-      expelEnclosingWhitespace: true,
-    },
-  
-    // If your schema uses `strike` instead:
-    strike: {
-      open: "~~",
-      close: "~~",
-      mixable: true,
-      expelEnclosingWhitespace: true,
-    },
-  };
+  ...defaultMarkdownSerializer.marks,
+
+  // ProseKit bold → **text**
+  bold: {
+    open: "**",
+    close: "**",
+    mixable: true,
+    expelEnclosingWhitespace: true,
+  },
+
+  // ProseKit italic → *text*
+  italic: {
+    open: "*",
+    close: "*",
+    mixable: true,
+    expelEnclosingWhitespace: true,
+  },
+
+  // --- ADD THIS ---
+  // ProseKit strikethrough → ~~text~~
+  strikethrough: {
+    open: "~~",
+    close: "~~",
+    mixable: true,
+    expelEnclosingWhitespace: true,
+  },
+
+  // If your schema uses `strike` instead:
+  strike: {
+    open: "~~",
+    close: "~~",
+    mixable: true,
+    expelEnclosingWhitespace: true,
+  },
+};
 
 // create serializer
 const mySerializer = new MarkdownSerializer(nodes, marks);
-
 
 export function saveAsMarkdown(json: NodeJSON) {
   const schema = defineBasicExtension().schema!;
@@ -139,11 +141,35 @@ export default async function ViewLesson({
   const viewLesson = await db
     .select()
     .from(lesson)
-    .where(and(eq(lesson.school_id, dbUser.school_id), eq(lesson.id, parseInt(id))));
+    .where(
+      and(eq(lesson.school_id, dbUser.school_id), eq(lesson.id, parseInt(id)))
+    );
 
   if (viewLesson.length === 0) {
     redirect("/lessons");
   }
 
-  return <LessonViewer doc={JSON.parse(viewLesson[0].content_markdown)} id={id} title={viewLesson[0].title} />;
+  const hasSubmission = await db
+    .select()
+    .from(submission)
+    .where(
+      and(
+        eq(submission.lesson_id, parseInt(id)),
+        eq(submission.user_id, dbUser.id)
+      )
+    )
+    .limit(1);
+
+  const alreadySubmitted = hasSubmission.length > 0;
+
+  console.log((alreadySubmitted))
+
+  return (
+    <LessonViewer
+      doc={JSON.parse(viewLesson[0].content_markdown)}
+      id={id}
+      title={viewLesson[0].title}
+      alreadySubmitted={alreadySubmitted}
+    />
+  );
 }

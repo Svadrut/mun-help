@@ -160,7 +160,7 @@ export default function CreateLessonForm({
         );
 
       // Redirect to lessons page on success
-      router.push("/admin/lessons");
+      router.push("/admin/view-lessons");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
       setIsSubmitting(false);

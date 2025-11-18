@@ -12,9 +12,8 @@ import {
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-export default function Lessons({
+export default function ViewLessonsTable({
   lessons,
-  submissions
 }: {
   lessons: {
     created_at: string;
@@ -30,18 +29,6 @@ export default function Lessons({
     is_published: boolean;
     updated_at: Date;
   }[];
-  submissions: {
-    id: number;
-    lesson_id: number;
-    user_id: number;
-    content_markdown: string | null;
-    media_url: string | null;
-    transcript: string | null;
-    raw_metrics: Record<string, any> | null;
-    status: "draft" | "submitted" | "graded" | "resubmitted";
-    submitted_at: Date;
-    updated_at: Date;
-  }[];
 }) {
   return (
     <div>
@@ -52,14 +39,11 @@ export default function Lessons({
               <TableHead>Title</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Date</TableHead>
-              <TableHead className="text-right pr-6">Actions</TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody>
             {lessons.map((lesson) => {
-              const submission = submissions.find((sub) => sub.lesson_id === lesson.id);
-              
               return (
                 <TableRow key={lesson.id}>
                   <TableCell className="font-medium">{lesson.title}</TableCell>
@@ -69,23 +53,6 @@ export default function Lessons({
                   </TableCell>
 
                   <TableCell>{lesson.created_at}</TableCell>
-
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      {submission && (
-                        <Link href={`/lessons/submission/${lesson.id}`}>
-                          <Button size="sm" variant="outline">
-                            Check Grade
-                          </Button>
-                        </Link>
-                      )}
-                      <Link href={`/lessons/${lesson.id}`}>
-                        <Button size="sm">
-                          View <ArrowRight />
-                        </Button>
-                      </Link>
-                    </div>
-                  </TableCell>
                 </TableRow>
               );
             })}
