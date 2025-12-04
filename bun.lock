@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "mun-help",
@@ -22,7 +23,7 @@
         "lucide-react": "^0.553.0",
         "next": "16.0.3",
         "next-themes": "^0.4.6",
-        "prosekit": "^0.16.2",
+        "prosekit": "^0.16.3",
         "prosemirror-markdown": "^1.13.2",
         "react": "^19.2.0",
         "react-dom": "19.2.0",
@@ -300,27 +301,27 @@
 
     "@preact/signals-core": ["@preact/signals-core@1.12.1", "", {}, ""],
 
-    "@prosekit/basic": ["@prosekit/basic@0.6.5", "", { "dependencies": { "@prosekit/core": "^0.8.6", "@prosekit/extensions": "^0.12.1", "@prosekit/pm": "^0.1.14" } }, ""],
+    "@prosekit/basic": ["@prosekit/basic@0.6.6", "", { "dependencies": { "@prosekit/core": "^0.8.7", "@prosekit/extensions": "^0.12.2", "@prosekit/pm": "^0.1.14" } }, "sha512-Oe7DAhb4dZediGAXa1OPqmQhpXEELUKFkKDiiANZj8tc9LjWZPoTPLapYOISPOxAjmpmVb5ywsJfh7Aerzi1cw=="],
 
-    "@prosekit/core": ["@prosekit/core@0.8.6", "", { "dependencies": { "@ocavue/utils": "^0.8.1", "@prosekit/pm": "^0.1.14", "clsx": "^2.1.1", "just-clone": "^6.2.0", "just-map-values": "^3.2.0", "orderedmap": "^2.1.1", "prosemirror-splittable": "^0.1.1", "type-fest": "^5.2.0" } }, ""],
+    "@prosekit/core": ["@prosekit/core@0.8.7", "", { "dependencies": { "@ocavue/utils": "^0.8.1", "@prosekit/pm": "^0.1.14", "clsx": "^2.1.1", "just-clone": "^6.2.0", "just-map-values": "^3.2.0", "orderedmap": "^2.1.1", "prosemirror-splittable": "^0.1.1", "type-fest": "^5.2.0" } }, "sha512-dh1Wh0aR8iNOJs2+rlyj2qYl7fCf06qbGFgZ80sFGRripjfp5v/9EeskpwWsE3UOnyZuIqVQ63sMmEp+2fBSVA=="],
 
-    "@prosekit/extensions": ["@prosekit/extensions@0.12.1", "", { "dependencies": { "@ocavue/utils": "^0.8.1", "@prosekit/core": "^0.8.6", "@prosekit/pm": "^0.1.14", "prosemirror-changeset": "^2.3.1", "prosemirror-drop-indicator": "^0.1.2", "prosemirror-dropcursor": "^1.8.2", "prosemirror-flat-list": "^0.5.8", "prosemirror-gapcursor": "^1.4.0", "prosemirror-highlight": "^0.13.0", "prosemirror-search": "^1.1.0", "prosemirror-tables": "^1.8.1", "shiki": "^3.15.0" }, "peerDependencies": { "loro-crdt": ">= 0.16.7", "loro-prosemirror": ">= 0.0.7", "y-prosemirror": ">= 1.2.9", "yjs": ">= 13.6.18" }, "optionalPeers": ["loro-crdt", "loro-prosemirror", "y-prosemirror", "yjs"] }, ""],
+    "@prosekit/extensions": ["@prosekit/extensions@0.12.2", "", { "dependencies": { "@ocavue/utils": "^0.8.1", "@prosekit/core": "^0.8.7", "@prosekit/pm": "^0.1.14", "prosemirror-changeset": "^2.3.1", "prosemirror-drop-indicator": "^0.1.2", "prosemirror-dropcursor": "^1.8.2", "prosemirror-flat-list": "^0.5.8", "prosemirror-gapcursor": "^1.4.0", "prosemirror-highlight": "^0.13.0", "prosemirror-search": "^1.1.0", "prosemirror-tables": "^1.8.1", "shiki": "^3.15.0" }, "peerDependencies": { "loro-crdt": ">= 0.16.7", "loro-prosemirror": ">= 0.0.7", "y-prosemirror": ">= 1.2.9", "yjs": ">= 13.6.18" }, "optionalPeers": ["loro-crdt", "loro-prosemirror", "y-prosemirror", "yjs"] }, "sha512-VbhHsuTvTlAsikgT6SYj1Zis3Cltbjtk85w3YUL4dcMK9tVbZvB//Zh8a15xiR4BB/5wfIgrLiK7DwxfTARAQg=="],
 
-    "@prosekit/lit": ["@prosekit/lit@0.5.2", "", { "dependencies": { "@prosekit/web": "^0.7.6" } }, ""],
+    "@prosekit/lit": ["@prosekit/lit@0.5.3", "", { "dependencies": { "@prosekit/web": "^0.7.7" } }, "sha512-Hps2uPGAkt+iq81g2rimxvHEmgq8TzGl8iYFHoezHk55ZydZMq6p+gy7DuDHz/fxay/xhwDg+fUCvqIWWaNGLQ=="],
 
     "@prosekit/pm": ["@prosekit/pm@0.1.14", "", { "dependencies": { "prosemirror-commands": "^1.7.1", "prosemirror-history": "^1.4.1", "prosemirror-inputrules": "^1.5.1", "prosemirror-keymap": "^1.2.3", "prosemirror-model": "^1.25.4", "prosemirror-state": "^1.4.4", "prosemirror-transform": "^1.10.5", "prosemirror-view": "^1.41.3" } }, ""],
 
-    "@prosekit/preact": ["@prosekit/preact@0.6.1", "", { "dependencies": { "@prosekit/core": "^0.8.6", "@prosekit/pm": "^0.1.14", "@prosekit/web": "^0.7.6", "@prosemirror-adapter/core": "^0.4.6", "@prosemirror-adapter/preact": "^0.4.6" }, "peerDependencies": { "preact": ">= 10.11.0" }, "optionalPeers": ["preact"] }, ""],
+    "@prosekit/preact": ["@prosekit/preact@0.6.2", "", { "dependencies": { "@prosekit/core": "^0.8.7", "@prosekit/pm": "^0.1.14", "@prosekit/web": "^0.7.7", "@prosemirror-adapter/core": "^0.4.6", "@prosemirror-adapter/preact": "^0.4.6" }, "peerDependencies": { "preact": ">= 10.11.0" }, "optionalPeers": ["preact"] }, "sha512-MFQYQlhUywoi3kq6WAzL3KsM3H2WlyiNfpIriHug6P7DwoLAIC/+hTdk3sHY+Rlq5KzLucrbLBe+2Tl3SiXUiQ=="],
 
-    "@prosekit/react": ["@prosekit/react@0.6.2", "", { "dependencies": { "@prosekit/core": "^0.8.6", "@prosekit/pm": "^0.1.14", "@prosekit/web": "^0.7.6", "@prosemirror-adapter/core": "^0.4.6", "@prosemirror-adapter/react": "^0.4.6" }, "peerDependencies": { "react": ">= 18.2.0", "react-dom": ">= 18.2.0" } }, ""],
+    "@prosekit/react": ["@prosekit/react@0.6.3", "", { "dependencies": { "@prosekit/core": "^0.8.7", "@prosekit/pm": "^0.1.14", "@prosekit/web": "^0.7.7", "@prosemirror-adapter/core": "^0.4.6", "@prosemirror-adapter/react": "^0.4.6" }, "peerDependencies": { "react": ">= 18.2.0", "react-dom": ">= 18.2.0" }, "optionalPeers": ["react", "react-dom"] }, "sha512-9D5t7sKE5BZVrOd4Goq+0yZSi+5B864Kbn9sWa0CRyDR1MkPNSCEMqe/h7s46MdodKWp2rjLYl9fUblcBJXiaw=="],
 
-    "@prosekit/solid": ["@prosekit/solid@0.6.1", "", { "dependencies": { "@prosekit/core": "^0.8.6", "@prosekit/pm": "^0.1.14", "@prosekit/web": "^0.7.6", "@prosemirror-adapter/core": "^0.4.6", "@prosemirror-adapter/solid": "^0.4.6" }, "peerDependencies": { "solid-js": ">= 1.7.0" }, "optionalPeers": ["solid-js"] }, ""],
+    "@prosekit/solid": ["@prosekit/solid@0.6.2", "", { "dependencies": { "@prosekit/core": "^0.8.7", "@prosekit/pm": "^0.1.14", "@prosekit/web": "^0.7.7", "@prosemirror-adapter/core": "^0.4.6", "@prosemirror-adapter/solid": "^0.4.6" }, "peerDependencies": { "solid-js": ">= 1.7.0" }, "optionalPeers": ["solid-js"] }, "sha512-6dxRoXxG/pEjJjNFiet8nHyiNkKYkCp2ng3xTfw7Pmhc1/Rptqo/HcPtz1JFh7R8p/tMmCFFRH7ngq9E6ant/A=="],
 
-    "@prosekit/svelte": ["@prosekit/svelte@0.8.1", "", { "dependencies": { "@prosekit/core": "^0.8.6", "@prosekit/pm": "^0.1.14", "@prosekit/web": "^0.7.6", "@prosemirror-adapter/core": "^0.4.6", "@prosemirror-adapter/svelte": "^0.4.6" }, "peerDependencies": { "svelte": ">= 5.0.0" }, "optionalPeers": ["svelte"] }, ""],
+    "@prosekit/svelte": ["@prosekit/svelte@0.8.2", "", { "dependencies": { "@prosekit/core": "^0.8.7", "@prosekit/pm": "^0.1.14", "@prosekit/web": "^0.7.7", "@prosemirror-adapter/core": "^0.4.6", "@prosemirror-adapter/svelte": "^0.4.6" }, "peerDependencies": { "svelte": ">= 5.0.0" }, "optionalPeers": ["svelte"] }, "sha512-Y144KptVB2EQDY9NpJmBBtRSbZUP33OTrSmVM1nTwZIgx+Wi1zp8xTSc56fYjYekltOA6NhGlJwJArMtOt2+xA=="],
 
-    "@prosekit/vue": ["@prosekit/vue@0.6.1", "", { "dependencies": { "@prosekit/core": "^0.8.6", "@prosekit/pm": "^0.1.14", "@prosekit/web": "^0.7.6", "@prosemirror-adapter/core": "^0.4.6", "@prosemirror-adapter/vue": "^0.4.6" }, "peerDependencies": { "vue": ">= 3.0.0" }, "optionalPeers": ["vue"] }, ""],
+    "@prosekit/vue": ["@prosekit/vue@0.6.2", "", { "dependencies": { "@prosekit/core": "^0.8.7", "@prosekit/pm": "^0.1.14", "@prosekit/web": "^0.7.7", "@prosemirror-adapter/core": "^0.4.6", "@prosemirror-adapter/vue": "^0.4.6" }, "peerDependencies": { "vue": ">= 3.0.0" }, "optionalPeers": ["vue"] }, "sha512-EdLwqPV47hPA0JS2ptaRf3VoMIlQbBAzG06aFKMWFRgab+O7rcP/P6FMim5sQULz9kbfJAX4i1qe0OHP8ybKtA=="],
 
-    "@prosekit/web": ["@prosekit/web@0.7.6", "", { "dependencies": { "@aria-ui/core": "^0.0.22", "@aria-ui/listbox": "^0.0.25", "@aria-ui/menu": "^0.0.21", "@aria-ui/overlay": "^0.0.25", "@aria-ui/popover": "^0.0.28", "@aria-ui/presence": "^0.0.20", "@aria-ui/tooltip": "^0.0.30", "@floating-ui/dom": "^1.7.4", "@ocavue/utils": "^0.8.1", "@prosekit/core": "^0.8.6", "@prosekit/extensions": "^0.12.1", "@prosekit/pm": "^0.1.14", "@zag-js/dom-query": "^1.27.1", "prosemirror-tables": "^1.8.1" } }, ""],
+    "@prosekit/web": ["@prosekit/web@0.7.7", "", { "dependencies": { "@aria-ui/core": "^0.0.22", "@aria-ui/listbox": "^0.0.25", "@aria-ui/menu": "^0.0.21", "@aria-ui/overlay": "^0.0.25", "@aria-ui/popover": "^0.0.28", "@aria-ui/presence": "^0.0.20", "@aria-ui/tooltip": "^0.0.30", "@floating-ui/dom": "^1.7.4", "@ocavue/utils": "^0.8.1", "@prosekit/core": "^0.8.7", "@prosekit/extensions": "^0.12.2", "@prosekit/pm": "^0.1.14", "@zag-js/dom-query": "^1.28.0", "prosemirror-tables": "^1.8.1" } }, "sha512-9GGjoyqB5RmRhUXmazhhMwp3dVD9mGnaqK3YwByepJfz4chfwqMPkMk7UAKHxWGWbmrQkQ8+q+fJePaa6rmY5g=="],
 
     "@prosemirror-adapter/core": ["@prosemirror-adapter/core@0.4.6", "", { "dependencies": { "prosemirror-model": "^1.25.3", "prosemirror-state": "^1.4.3", "prosemirror-view": "^1.41.1" } }, ""],
 
@@ -1098,7 +1099,7 @@
 
     "property-information": ["property-information@7.1.0", "", {}, ""],
 
-    "prosekit": ["prosekit@0.16.2", "", { "dependencies": { "@prosekit/basic": "0.6.5", "@prosekit/core": "0.8.6", "@prosekit/extensions": "0.12.1", "@prosekit/lit": "0.5.2", "@prosekit/pm": "0.1.14", "@prosekit/preact": "0.6.1", "@prosekit/react": "0.6.2", "@prosekit/solid": "0.6.1", "@prosekit/svelte": "0.8.1", "@prosekit/vue": "0.6.1", "@prosekit/web": "0.7.6" }, "peerDependencies": { "loro-crdt": ">= 0.16.7", "loro-prosemirror": ">= 0.0.7", "preact": ">= 10.11.0", "react": ">= 18.2.0", "react-dom": ">= 18.2.0", "solid-js": ">= 1.7.0", "svelte": ">= 5.0.0", "vue": ">= 3.0.0", "y-prosemirror": ">= 1.2.9", "yjs": ">= 13.6.18" }, "optionalPeers": ["loro-crdt", "loro-prosemirror", "preact", "solid-js", "svelte", "vue", "y-prosemirror", "yjs"] }, ""],
+    "prosekit": ["prosekit@0.16.3", "", { "dependencies": { "@prosekit/basic": "0.6.6", "@prosekit/core": "0.8.7", "@prosekit/extensions": "0.12.2", "@prosekit/lit": "0.5.3", "@prosekit/pm": "0.1.14", "@prosekit/preact": "0.6.2", "@prosekit/react": "0.6.3", "@prosekit/solid": "0.6.2", "@prosekit/svelte": "0.8.2", "@prosekit/vue": "0.6.2", "@prosekit/web": "0.7.7" }, "peerDependencies": { "loro-crdt": ">= 0.16.7", "loro-prosemirror": ">= 0.0.7", "preact": ">= 10.11.0", "react": ">= 18.2.0", "react-dom": ">= 18.2.0", "solid-js": ">= 1.7.0", "svelte": ">= 5.0.0", "vue": ">= 3.0.0", "y-prosemirror": ">= 1.2.9", "yjs": ">= 13.6.18" }, "optionalPeers": ["loro-crdt", "loro-prosemirror", "preact", "react", "react-dom", "solid-js", "svelte", "vue", "y-prosemirror", "yjs"] }, "sha512-3bG7sT+sbIMOau9Gu03TcIQlMmNG5hoAzZxuAFwPeRDYoicG0lHs0OQGKNHIsqn37dGoZCjBZU0InWxEoxebAg=="],
 
     "prosemirror-changeset": ["prosemirror-changeset@2.3.1", "", { "dependencies": { "prosemirror-transform": "^1.0.0" } }, ""],
 

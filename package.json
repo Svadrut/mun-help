@@ -27,7 +27,7 @@
     "lucide-react": "^0.553.0",
     "next": "16.0.3",
     "next-themes": "^0.4.6",
-    "prosekit": "^0.16.2",
+    "prosekit": "^0.16.3",
     "prosemirror-markdown": "^1.13.2",
     "react": "^19.2.0",
     "react-dom": "19.2.0",
