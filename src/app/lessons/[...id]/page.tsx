@@ -25,7 +25,7 @@ const nodes = {
     const isOrdered = node.attrs?.type === "ordered";
     const start = node.attrs?.start ?? 1;
     state.renderList(node, "  ", (i: number) =>
-      isOrdered ? `${start + i}. ` : "- "
+      isOrdered ? `${start + i}. ` : "- ",
     );
   },
 
@@ -37,6 +37,16 @@ const nodes = {
   orderedList(state: any, node: any) {
     const start = node.attrs?.start ?? 1;
     state.renderList(node, "  ", (i: number) => `${start + i}. `);
+  },
+
+  hardBreak(state: any, node: any, parent: any, index: number) {
+    // ProseMirror markdown hard break = "  \n"
+    state.write("  \n");
+  },
+
+  // If your schema also uses PM's built-in name:
+  hard_break(state: any) {
+    state.write("  \n");
   },
 
   // ProseKit listItem -> prosemirror's list_item implementation
@@ -126,8 +136,8 @@ export default async function ViewLesson({
       and(
         eq(membership.user_id, dbUser.id),
         eq(membership.school_id, dbUser.school_id),
-        eq(membership.role, "admin")
-      )
+        eq(membership.role, "admin"),
+      ),
     )
     .limit(1);
 
@@ -142,7 +152,7 @@ export default async function ViewLesson({
     .select()
     .from(lesson)
     .where(
-      and(eq(lesson.school_id, dbUser.school_id), eq(lesson.id, parseInt(id)))
+      and(eq(lesson.school_id, dbUser.school_id), eq(lesson.id, parseInt(id))),
     );
 
   if (viewLesson.length === 0) {
@@ -155,14 +165,14 @@ export default async function ViewLesson({
     .where(
       and(
         eq(submission.lesson_id, parseInt(id)),
-        eq(submission.user_id, dbUser.id)
-      )
+        eq(submission.user_id, dbUser.id),
+      ),
     )
     .limit(1);
 
   const alreadySubmitted = hasSubmission.length > 0;
 
-  console.log((alreadySubmitted))
+  console.log(alreadySubmitted);
 
   return (
     <LessonViewer
