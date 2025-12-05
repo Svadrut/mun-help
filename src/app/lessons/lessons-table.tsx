@@ -72,13 +72,13 @@ export default function Lessons({
 
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      {submission && (
+                      {/* {submission && (
                         <Link href={`/lessons/submission/${lesson.id}`}>
                           <Button size="sm" variant="outline">
                             Check Grade
                           </Button>
                         </Link>
-                      )}
+                      )} */}
                       <Link href={`/lessons/${lesson.id}`}>
                         <Button size="sm">
                           View <ArrowRight />

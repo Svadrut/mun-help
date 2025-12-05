@@ -95,7 +95,7 @@ export default async function SubmissionDetailPage({
             <strong>Type:</strong>{" "}
             {les.type[0].toUpperCase() + les.type.slice(1)}
           </p>
-          <p>
+          {/* <p>
             <strong>Submitted:</strong>{" "}
             {new Date(sub.submitted_at).toLocaleString("en-US", {
               year: "numeric",
@@ -104,7 +104,7 @@ export default async function SubmissionDetailPage({
               hour: "2-digit",
               minute: "2-digit",
             })}
-          </p>
+          </p> */}
           <p>
             <strong>Grade:</strong> {gradeScore ?? "—"}
           </p>
