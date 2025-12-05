@@ -1,6 +1,6 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { db } from "@/src/db/drizzle";
-import { joinRequest } from "@/src/db/schema";
+import { joinRequest, user, membership } from "@/src/db/schema";
 import { eq, and } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create the join request
+    // Create the join request with approved status (auto-approved)
     const [newRequest] = await db
       .insert(joinRequest)
       .values({
@@ -64,9 +64,77 @@ export async function POST(request: Request) {
         name: userName,
         email: userEmail,
         clerk_id: clerkUser.id,
-        status: "pending",
+        status: "approved",
       })
       .returning();
+
+    // Automatically create/update user and membership
+    // Check if user already exists in the database
+    const existingUser = await db
+      .select()
+      .from(user)
+      .where(eq(user.clerk_id, clerkUser.id))
+      .limit(1);
+
+    let userId: number;
+
+    if (existingUser.length > 0) {
+      // Update existing user with new school_id
+      const [updatedUser] = await db
+        .update(user)
+        .set({
+          school_id: schoolId,
+          email: userEmail,
+          display_name: userName,
+          updated_at: new Date(),
+        })
+        .where(eq(user.id, existingUser[0].id))
+        .returning();
+
+      userId = updatedUser.id;
+    } else {
+      // Create new user record
+      const [newUser] = await db
+        .insert(user)
+        .values({
+          clerk_id: clerkUser.id,
+          school_id: schoolId,
+          email: userEmail,
+          display_name: userName,
+        })
+        .returning();
+
+      userId = newUser.id;
+    }
+
+    // Check if membership already exists
+    const existingMembership = await db
+      .select()
+      .from(membership)
+      .where(and(
+        eq(membership.user_id, userId),
+        eq(membership.school_id, schoolId)
+      ))
+      .limit(1);
+
+    if (existingMembership.length === 0) {
+      // Create membership with student role
+      await db.insert(membership).values({
+        user_id: userId,
+        school_id: schoolId,
+        role: "student",
+        can_view_progress: false,
+      });
+    } else {
+      // Update existing membership to student if it exists
+      await db
+        .update(membership)
+        .set({
+          role: "student",
+          updated_at: new Date(),
+        })
+        .where(eq(membership.id, existingMembership[0].id));
+    }
 
     return NextResponse.json(
       {
@@ -75,6 +143,7 @@ export async function POST(request: Request) {
           id: newRequest.id,
           schoolId: newRequest.school_id,
         },
+        message: "Request automatically approved and user added to school",
       },
       { status: 201 }
     );

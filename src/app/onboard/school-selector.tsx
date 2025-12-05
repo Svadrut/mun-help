@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ChevronDownIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { redirect, useRouter } from "next/navigation";
 
 interface School {
   id: number;
@@ -26,6 +27,7 @@ export default function SchoolSelector({ schools }: SchoolSelectorProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [requestStatus, setRequestStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const router = useRouter();
 
   async function handleRequestJoin() {
     if (!selectedSchool) return;
@@ -46,6 +48,8 @@ export default function SchoolSelector({ schools }: SchoolSelectorProps) {
       });
 
       const data = await response.json();
+
+      router.push("/");
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to submit request");
@@ -103,12 +107,13 @@ export default function SchoolSelector({ schools }: SchoolSelectorProps) {
             disabled={isSubmitting}
             className="w-full"
           >
-            {isSubmitting ? "Submitting..." : "Request to join"}
+            {isSubmitting ? "Submitting..." : "Join School"}
           </Button>
           
           {requestStatus === "success" && (
             <p className="text-sm text-green-600 dark:text-green-400">
-              Request submitted successfully! An admin will review your request.
+              {/* Request submitted successfully! An admin will review your request. */}
+              You successfully joined this school!
             </p>
           )}
           
