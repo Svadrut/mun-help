@@ -95,7 +95,7 @@ export async function POST(request: Request) {
       model: openai.chat("gpt-5-mini"),
       prompt: `You are a grading helper for a MUN teacher. Your job is to either grade speeches said by a student (transcription and duration of speech provided) and/or a written assignment (such as a resolution).
                You will be provided with the lesson given to the student, the instructions for the student's activity, and a grading guide written by the teacher about how you, the MUN assistant, should grade.
-               You may or may not be provided a transcription or a written assignment. Score out of 100, using whole numbers only.
+               You may or may not be provided a transcription or a written assignment. Score out of 40, using whole numbers only.
 
                ${
                  (type === "speaking" || type === "both") &&

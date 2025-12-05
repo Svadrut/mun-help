@@ -27,7 +27,7 @@ const GradeViewer = ({ grade, lessonTitle }: GradeProps) => {
       <div className="w-full max-w-3xl border-2 rounded-2xl p-4 shadow">
         {/* <h2 className="text-xl font-semibold mb-2">Submission</h2> */}
 
-        <h1 className="text-2xl font-semibold mb-6">Grade: {grade.score ?? "N/A"}/100</h1>
+        <h1 className="text-2xl font-semibold mb-6">Grade: {grade.score ?? "N/A"}/40</h1>
 
         <h3 className="font-semibold mt-4 mb-1">AI Feedback</h3>
         <div className="p-2 rounded whitespace-pre-wrap mb-4">
