@@ -25,7 +25,8 @@ export default async function Onboard() {
   }
 
   // Fetch all schools from the database
-  const schools = await db.select().from(school);
+  let schools = await db.select().from(school);
+  schools = schools.filter((school) => school.name !== "test");
 
   return (
     <div className="container mx-auto px-4 py-16 max-w-2xl">
@@ -35,7 +36,7 @@ export default async function Onboard() {
           <SchoolSelector schools={schools} />
         </div>
     
-        <div className="pt-8 border-t">
+        {/* <div className="pt-8 border-t">
           <p className="text-sm text-muted-foreground">
             Do you want to add a new school?{" "}
             <Link 
@@ -45,7 +46,7 @@ export default async function Onboard() {
               Add a new school
             </Link>
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );
