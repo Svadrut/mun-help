@@ -15,14 +15,105 @@ import {
 import { Node as ProseMirrorNode, DOMSerializer } from "prosemirror-model";
 import { ActivityViewer } from "./activity-viewer";
 
-// build nodes mapping that includes ProseKit node names
+// build nodes mapping that includes all ProseKit node names
 const nodes = {
   // keep all the default prosemirror handlers
   ...defaultMarkdownSerializer.nodes,
 
-  // generic "list" node (if your ProseKit schema uses a single `list` node)
+  // Heading nodes (h1-h6)
+  heading(state: any, node: any) {
+    const level = node.attrs?.level || 1;
+    const hashes = "#".repeat(level);
+    state.write(hashes + " ");
+    state.renderContent(node);
+    state.closeBlock(node);
+  },
+
+  // Blockquote
+  blockquote(state: any, node: any) {
+    state.wrapBlock("> ", null, node, () => state.renderContent(node));
+  },
+
+  // Code block
+  code_block(state: any, node: any) {
+    const info = node.attrs?.language || "";
+    state.write("```" + info + "\n");
+    state.text(node.textContent, false);
+    state.ensureNewLine();
+    state.write("```");
+    state.closeBlock(node);
+  },
+
+  // Horizontal rule
+  horizontal_rule(state: any, node: any) {
+    state.write(node.attrs?.markup || "---");
+    state.closeBlock(node);
+  },
+
+  // Hard break
+  hardBreak(state: any, node: any, parent: any, index: number) {
+    state.write("  \n");
+  },
+  hard_break(state: any) {
+    state.write("  \n");
+  },
+
+  // Image
+  image(state: any, node: any) {
+    const src = node.attrs?.src || "";
+    const alt = node.attrs?.alt || "";
+    const title = node.attrs?.title || "";
+    const titlePart = title ? ` "${title}"` : "";
+    state.write(`![${alt}](${src}${titlePart})`);
+  },
+
+  // Table support
+  table(state: any, node: any) {
+    state.ensureNewLine();
+    let isFirstRow = true;
+    node.content.forEach((row: any, i: number) => {
+      if (!isFirstRow) state.ensureNewLine();
+      isFirstRow = false;
+      state.write("| ");
+      let isFirstCell = true;
+      row.content.forEach((cell: any) => {
+        if (!isFirstCell) state.write(" | ");
+        isFirstCell = false;
+        state.renderInline(cell);
+      });
+      state.write(" |");
+      // Add separator after header row
+      if (i === 0) {
+        state.ensureNewLine();
+        state.write("|");
+        for (let k = 0; k < row.childCount; k++) {
+          state.write(" --- |");
+        }
+      }
+    });
+    state.ensureNewLine();
+    state.closeBlock(node);
+  },
+  table_row(state: any, node: any) {
+    state.write("| ");
+    let first = true;
+    node.content.forEach((cell: any) => {
+      if (!first) state.write(" | ");
+      first = false;
+      state.renderInline(cell);
+    });
+    state.write(" |");
+    state.ensureNewLine();
+  },
+  table_cell(state: any, node: any) {
+    state.renderInline(node);
+  },
+  table_header(state: any, node: any) {
+    state.renderInline(node);
+  },
+
+  // Generic list node
   list(state: any, node: any) {
-    // assume node.attrs.type === "ordered" or "bullet", and maybe node.attrs.start
     const isOrdered = node.attrs?.type === "ordered";
     const start = node.attrs?.start ?? 1;
     state.renderList(node, "  ", (i: number) =>
@@ -30,7 +121,7 @@ const nodes = {
     );
   },
 
-  // ProseKit-specific names (if used)
+  // ProseKit-specific list names
   bulletList(state: any, node: any) {
     state.renderList(node, "  ", () => "- ");
   },
@@ -40,15 +131,15 @@ const nodes = {
     state.renderList(node, "  ", (i: number) => `${start + i}. `);
   },
 
-  // ProseKit listItem -> prosemirror's list_item implementation
+  // List item
   listItem: defaultMarkdownSerializer.nodes.list_item,
 };
 
-// reuse mark serializers from default
+// Complete mark serializers for all ProseKit marks
 const marks = {
   ...defaultMarkdownSerializer.marks,
 
-  // ProseKit bold → **text**
+  // Bold → **text**
   bold: {
     open: "**",
     close: "**",
@@ -56,7 +147,7 @@ const marks = {
     expelEnclosingWhitespace: true,
   },
 
-  // ProseKit italic → *text*
+  // Italic → *text*
   italic: {
     open: "*",
     close: "*",
@@ -64,19 +155,45 @@ const marks = {
     expelEnclosingWhitespace: true,
   },
 
-  // --- ADD THIS ---
-  // ProseKit strikethrough → ~~text~~
+  // Strikethrough → ~~text~~
   strikethrough: {
     open: "~~",
     close: "~~",
     mixable: true,
     expelEnclosingWhitespace: true,
   },
-
-  // If your schema uses `strike` instead:
   strike: {
     open: "~~",
     close: "~~",
+    mixable: true,
+    expelEnclosingWhitespace: true,
+  },
+
+  // Underline (markdown doesn't have native underline, use HTML)
+  underline: {
+    open: "<u>",
+    close: "</u>",
+    mixable: true,
+    expelEnclosingWhitespace: true,
+  },
+
+  // Inline code → `text`
+  code: {
+    open: "`",
+    close: "`",
+    mixable: false,
+    expelEnclosingWhitespace: true,
+  },
+
+  // Link → [text](url)
+  link: {
+    open: (state: any, mark: any) => "[",
+    close: (state: any, mark: any) => {
+      const href = mark.attrs?.href || "";
+      const title = mark.attrs?.title || "";
+      const titlePart = title ? ` "${title}"` : "";
+      return `](${href}${titlePart})`;
+    },
     mixable: true,
     expelEnclosingWhitespace: true,
   },
