@@ -91,6 +91,7 @@ export async function POST(request: Request) {
 
     console.log(transcription?.text);
 
+    console.log("CONTENT: " + JSON.stringify(saveAsMarkdown(content)));
     const completion = await generateObject({
       model: openai.chat("gpt-5-mini"),
       prompt: `You are a grading helper for a MUN teacher. Your job is to either grade speeches said by a student (transcription and duration of speech provided) and/or a written assignment (such as a resolution).
