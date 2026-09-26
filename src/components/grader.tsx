@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { delMany, get, set, setMany } from "idb-keyval";
-import { DownloadIcon, FileArchiveIcon, RotateCwIcon } from "lucide-react";
+import { DownloadIcon, RotateCwIcon, UploadIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -74,18 +74,27 @@ export function Grader() {
       .forEach((r) => gradeRow(r, rubric));
   }, [loaded, rubric, rows, gradeRow]);
 
-  async function addZip(file: File) {
+  async function addFiles(files: File[]) {
     try {
-      const pdfs = pdfsFromZip(new Uint8Array(await file.arrayBuffer()));
-      if (!pdfs.length) return toast.error("No PDFs found in that zip");
+      const pdfs = (
+        await Promise.all(
+          files.map(async (f) => {
+            const bytes = new Uint8Array(await f.arrayBuffer());
+            if (/\.zip$/i.test(f.name)) return pdfsFromZip(bytes);
+            return /\.pdf$/i.test(f.name) ? [{ name: f.name, bytes }] : [];
+          })
+        )
+      ).flat();
+      if (!pdfs.length) return toast.error("No PDFs found. Upload PDFs or a .zip of PDFs.");
       const newRows: Row[] = pdfs
         .sort((a, b) => a.name.localeCompare(b.name))
-        .map((p) => ({ id: crypto.randomUUID(), fileName: p.name, status: "queued" }));
+        // Not crypto.randomUUID: it's missing on plain-http LAN addresses.
+        .map((p) => ({ id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, fileName: p.name, status: "queued" }));
       await setMany(newRows.map((r, i) => [pdfKey(r.id), pdfs[i].bytes]));
       setRows((rows) => [...rows, ...newRows]);
       toast.success(`Grading ${pdfs.length} PDFs`);
     } catch {
-      toast.error("Couldn't open that file. Is it a .zip?");
+      toast.error("Couldn't open that zip file");
     }
   }
 
@@ -131,15 +140,16 @@ export function Grader() {
         </CardContent>
       </Card>
 
-      <Card className={rubricReady ? "" : "opacity-60"}>
+      <Card>
         <CardHeader>
           <CardTitle>2. Submissions</CardTitle>
           <CardDescription>
-            A zip of student PDFs. Folders are fine, and anything that isn&apos;t a PDF is skipped.
+            Student PDFs, or a zip of them. Folders inside the zip are fine, and anything that isn&apos;t a PDF
+            is skipped.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ZipDrop disabled={!rubricReady} onFile={addZip} />
+          <FileDrop disabled={!rubricReady} onFiles={addFiles} />
         </CardContent>
       </Card>
 
@@ -200,13 +210,13 @@ export function Grader() {
   );
 }
 
-function ZipDrop({ disabled, onFile }: { disabled: boolean; onFile: (file: File) => void }) {
+function FileDrop({ disabled, onFiles }: { disabled: boolean; onFiles: (files: File[]) => void }) {
   const [over, setOver] = useState(false);
   return (
     <label
-      className={`flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed p-8 text-center text-sm transition-colors ${
+      className={`flex flex-col items-center gap-2 rounded-lg border-2 border-dashed p-8 text-center text-sm transition-colors ${
         over ? "border-primary bg-primary/5" : "border-input"
-      } ${disabled ? "pointer-events-none" : ""}`}
+      } ${disabled ? "cursor-not-allowed text-muted-foreground" : "cursor-pointer hover:bg-accent/50"}`}
       onDragOver={(e) => {
         e.preventDefault();
         setOver(true);
@@ -215,21 +225,21 @@ function ZipDrop({ disabled, onFile }: { disabled: boolean; onFile: (file: File)
       onDrop={(e) => {
         e.preventDefault();
         setOver(false);
-        const file = e.dataTransfer.files[0];
-        if (file && !disabled) onFile(file);
+        if (!disabled) onFiles([...e.dataTransfer.files]);
       }}
     >
-      <FileArchiveIcon className="size-8 text-muted-foreground" />
-      <span className="font-medium">{disabled ? "Set up the rubric first" : "Drop a .zip here or click to choose"}</span>
+      <UploadIcon className="size-8 text-muted-foreground" />
+      <span className="font-medium">Drop PDFs or a .zip here, or click to choose</span>
+      {disabled && <span>Add a rubric in step 1 first.</span>}
       <input
-        id="zip-file"
+        id="submission-files"
         type="file"
-        accept=".zip,application/zip"
+        multiple
+        accept=".pdf,application/pdf,.zip,application/zip"
         className="sr-only"
         disabled={disabled}
         onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) onFile(file);
+          onFiles([...(e.target.files ?? [])]);
           e.target.value = "";
         }}
       />

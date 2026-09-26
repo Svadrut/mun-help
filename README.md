@@ -3,7 +3,7 @@
 Grade a zip of student PDFs against a rubric and download the grades as a CSV.
 
 1. Paste or upload the rubric. The model turns it into criteria you can edit.
-2. Drop a zip of PDFs. Each one is sent to the model, which finds the student's name and scores every criterion.
+2. Drop in student PDFs or a zip of them. Each one is sent to the model, which finds the student's name and scores every criterion.
 3. Check flagged rows (missing or duplicate names, blank pages, etc.), fix anything by hand, and download the CSV.
 
 There's no database or login. The batch, including the PDFs, is saved in your browser's IndexedDB, so closing the tab doesn't lose progress. "New batch" clears it.

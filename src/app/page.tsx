@@ -20,7 +20,7 @@ export default function Home() {
         <div className="flex-1">
           <h1 className="text-2xl font-semibold">Rubric Grader</h1>
           <p className="text-sm text-muted-foreground">
-            Grade a zip of student PDFs against your rubric, check the results, download a CSV.
+            Grade student PDFs against your rubric, check the results, download a CSV.
           </p>
         </div>
         {askPassword && (

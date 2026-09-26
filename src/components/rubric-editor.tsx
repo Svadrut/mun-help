@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2Icon, PlusIcon, Trash2Icon } from "lucide-react";
+import { Loader2Icon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { postForm } from "@/lib/api";
 import { maxTotal } from "@/lib/batch";
 import type { Rubric } from "@/lib/schemas";
@@ -44,18 +44,18 @@ export function RubricEditor({ rubric, onChange, instructions, onInstructionsCha
         <textarea
           id="rubric-text"
           className={`${input} min-h-40 font-mono text-xs`}
-          placeholder={"Paste your rubric here.\n\nResearch (10): cites at least three sources...\nPolicy (10): ..."}
+          placeholder={"Paste your rubric here, or upload it as a PDF below.\n\nResearch (10): cites at least three sources...\nPolicy (10): ..."}
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
         <div className="flex flex-wrap items-center gap-3">
-          <label className="text-sm text-muted-foreground">
-            or upload a PDF{" "}
+          <label className={buttonVariants({ variant: "outline" }) + " cursor-pointer"}>
+            <UploadIcon /> {file ? file.name : "Upload rubric PDF"}
             <input
               id="rubric-file"
               type="file"
               accept="application/pdf"
-              className="text-sm file:mr-2 file:rounded-md file:border file:border-input file:bg-transparent file:px-2 file:py-1"
+              className="sr-only"
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
             />
           </label>
