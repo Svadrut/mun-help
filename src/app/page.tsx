@@ -1,56 +1,51 @@
-import Image from "next/image";
-import { db } from "../db/drizzle";
-import { membership, school, user } from "../db/schema";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { currentUser } from "@clerk/nextjs/server";
-import { eq, and } from "drizzle-orm";
-import { redirect } from "next/navigation";
+"use client";
 
-export default async function Home() {
-  const clerkUser = await currentUser();
+import { useEffect, useState } from "react";
+import { getPassword, PASSWORD_NEEDED, setPassword } from "@/lib/api";
+import { Grader } from "../components/grader";
+import { ModeToggle } from "../components/ModeToggle";
 
-  if (!clerkUser) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)]">
-        <h1 className="text-4xl font-bold">Flash Grader ⚡️</h1>
-        <h2 className="text-neutral-600 dark:text-neutral-400 mb-6">Created by Svadrut Krishnamurthy</h2>
-        <Link href="/sign-in">
-          <Button className="bg-primary">Sign in</Button>
-        </Link>
-      </div>
-    );
-  }
+export default function Home() {
+  const [askPassword, setAskPassword] = useState(false);
 
-  // Get the current user from the database
-  const currentDbUser = await db
-    .select()
-    .from(user)
-    .where(eq(user.clerk_id, clerkUser.id))
-    .limit(1);
+  useEffect(() => {
+    const show = () => setAskPassword(true);
+    window.addEventListener(PASSWORD_NEEDED, show);
+    return () => window.removeEventListener(PASSWORD_NEEDED, show);
+  }, []);
 
-  if (currentDbUser.length === 0) {
-    redirect("/onboard");
-  }
-
-  const dbUser = currentDbUser[0];
-
-  // Check if user is an admin
-  const userMembership = await db
-    .select()
-    .from(membership)
-    .where(
-      and(
-        eq(membership.user_id, dbUser.id),
-        eq(membership.school_id, dbUser.school_id),
-        eq(membership.role, "admin")
-      )
-    )
-    .limit(1);
-
-  if (userMembership.length === 0) {
-    redirect("/lessons");
-  } else {
-    redirect("/admin/view-lessons");
-  }
+  return (
+    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8">
+      <header className="flex flex-wrap items-center gap-3">
+        <div className="flex-1">
+          <h1 className="text-2xl font-semibold">Rubric Grader</h1>
+          <p className="text-sm text-muted-foreground">
+            Grade student PDFs against your rubric, check the results, download a CSV.
+          </p>
+        </div>
+        {askPassword && (
+          <form
+            className="flex items-center gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              setPassword(String(new FormData(e.currentTarget).get("password")));
+              setAskPassword(false);
+            }}
+          >
+            <input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="Site password"
+              defaultValue={getPassword()}
+              className="rounded-md border border-input bg-transparent px-2.5 py-1.5 text-sm"
+            />
+            <button className="text-sm font-medium underline">Save</button>
+          </form>
+        )}
+        <ModeToggle />
+      </header>
+      <Grader />
+    </div>
+  );
 }

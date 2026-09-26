@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rubric Grader
 
-## Getting Started
+Grade a zip of student PDFs against a rubric and download the grades as a CSV.
 
-First, run the development server:
+1. Paste or upload the rubric. The model turns it into criteria you can edit.
+2. Drop in student PDFs or a zip of them. Each one is sent to the model, which finds the student's name and scores every criterion.
+3. Check flagged rows (missing or duplicate names, blank pages, etc.), fix anything by hand, and download the CSV.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+There's no database or login. The batch, including the PDFs, is saved in your browser's IndexedDB, so closing the tab doesn't lose progress. "New batch" clears it.
+
+## Running it
+
+```sh
+cp .env.example .env.local   # add OPENAI_API_KEY
+bun install
+bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Variable | |
+| --- | --- |
+| `OPENAI_API_KEY` | Required |
+| `OPENAI_MODEL` | Defaults to `gpt-6-luna` |
+| `APP_PASSWORD` | If set, the site asks for it before calling the API. Set this on any public deployment. |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploying to Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Import the repo and set the env vars above. Vercel rejects request bodies over 4.5 MB, so a PDF larger than that fails with a message saying so. Run locally for batches of big scans.
